@@ -72,6 +72,49 @@ async function run() {
     })
 
 
+
+    /* update a single data for add packages */
+
+    app.put('/addPackage/:id', async (req, res) => {
+        const id = req.params.id
+        const filter = {
+            _id: new ObjectId(id)
+        }
+        const newPackage = req.body
+        const options = {
+            upsert: true,
+        }
+        const updatedPackage = {
+            $set: {
+                image_url: newPackage.image_url,
+                    name: newPackage.name,
+                    service_name: newPackage.service_name,
+                    service_area: newPackage.service_area,
+                    price : newPackage.price,
+                    email: newPackage.email,
+                    short_description: newPackage.short_description,
+                    Package_name: newPackage.Package_name
+
+            }
+        }
+        const result = await addPackageCollection.updateOne(filter , updatedPackage , options)
+        console.log(result);
+        res.send(result);
+    })
+
+     
+     /* delete a single data from the added Package section */
+     app.delete('/addPackage/:id', async (req, res) => {
+        const id = req.params.id
+        console.log(id);
+        const query = { _id :new ObjectId(id)}
+        const result = await addPackageCollection.deleteOne(query)
+        console.log(result);
+        res.send(result);
+    }
+    )
+
+
      /* post single data for add packages   */
      app.post('/addPackage', async (req, res) => {
         const product = req.body
