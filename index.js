@@ -58,6 +58,20 @@ async function run() {
     })
      
 
+     /* get single data using id for added package */
+     app.get("/addPackage/:id", async (req, res) => {
+        const id = req.params.id
+        
+        const query = {
+            _id : new ObjectId(id)
+        }
+        const result = await addPackageCollection.findOne(query)
+        console.log(result);
+        res.send(result)
+        
+    })
+
+
      /* post single data for add packages   */
      app.post('/addPackage', async (req, res) => {
         const product = req.body
