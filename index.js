@@ -39,7 +39,6 @@ async function run() {
       
 
 
-/* read data */
 
     /* read data */
     app.get('/allServices', async (req, res) => {
