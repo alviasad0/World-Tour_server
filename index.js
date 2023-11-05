@@ -46,6 +46,21 @@ async function run() {
 
         res.send(result);
     })
+ 
+
+     /* get single data using id */
+     app.get("/allServices/:id", async (req, res) => {
+        const id = req.params.id
+        
+        const query = {
+            _id : new ObjectId(id)
+        }
+        const result = await serviceCollection.findOne(query)
+        console.log(result);
+        res.send(result)
+        
+    })
+
 
 
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
