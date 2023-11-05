@@ -36,6 +36,8 @@ async function run() {
       
       /* create database and collection  */
       const  serviceCollection = client.db("allServiceDB").collection("allService")
+      const  addPackageCollection = client.db("addPackageDB").collection("addPackage")
+      const  addBookedCollection = client.db("addBookedDB").collection("addBooked")
       
 
 
@@ -47,6 +49,30 @@ async function run() {
         res.send(result);
     })
  
+     
+
+     /* post single data for add packages   */
+     app.post('/addPackage', async (req, res) => {
+        const product = req.body
+        const result = await addPackageCollection.insertOne(product)
+       
+        res.send(result);
+        console.log(result);
+    })
+
+
+
+
+     /* post single data for booked   */
+     app.post('/booked', async (req, res) => {
+        const product = req.body
+        const result = await addBookedCollection.insertOne(product)
+       
+        res.send(result);
+        console.log(result);
+    })
+
+
 
      /* get single data using id */
      app.get("/allServices/:id", async (req, res) => {
