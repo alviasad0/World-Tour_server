@@ -42,7 +42,7 @@ async function run() {
 
 
 
-    /* read data */
+    /* read data for all services */
     app.get('/allServices', async (req, res) => {
         const result = await serviceCollection.find().toArray()
 
