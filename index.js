@@ -48,7 +48,14 @@ async function run() {
 
         res.send(result);
     })
- 
+    
+
+    /* read data  for added packages*/
+    app.get('/addPackage', async (req, res) => {
+        const result = await addPackageCollection.find().toArray()
+
+        res.send(result);
+    })
      
 
      /* post single data for add packages   */
