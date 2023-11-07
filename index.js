@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken')
+const cookieParser= require('cookie-parser');
 const port = process.env.PORT || 5000
 const app = express()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -9,12 +11,13 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 app.use(express.json())
 /* app.use(cors()) */
 const corsConfig = {
-    origin: '*',
-    credenttials: true,
-    methods : ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    origin: ['http://localhost:5173'],
+    credentials: true,
+    methods : ['GET', 'POST','PATCH', 'PUT', 'DELETE', 'OPTIONS'],
 }
 
 app.use(cors(corsConfig))
+app.use(cookieParser())
 
 
 /* user name and the password */
@@ -40,7 +43,35 @@ async function run() {
       const  addBookedCollection = client.db("addBookedDB").collection("addBooked")
       
 
+    /* access token  */
+    // 76b7f5055e1b52554c47e5e27a22e4d8abec0535d46678fb6911d30da2649b078e9c143b3ebc4113720dadc513959e4f5e1040653a85f814bc2aabd1983bb1dc
 
+
+
+     /* auth releted api  */
+     app.post('/jwt' , async(req ,res)=>{
+     const user = req.body;
+     console.log('user for web token', user)
+     const token = jwt.sign(user, '76b7f5055e1b52554c47e5e27a22e4d8abec0535d46678fb6911d30da2649b078e9c143b3ebc4113720dadc513959e4f5e1040653a85f814bc2aabd1983bb1dc', {expiresIn: '1h'})
+
+     res.cookie('token', token ,{
+        httpOnly : true,
+        secure: true,
+        sameSite : 'none'
+     })
+     
+     .send({success : true})
+
+     })
+
+     /*  log out auth */
+     app.post('/logout', async(req ,res)=>{
+    const user = req.body
+    console.log('logging out ' , user);
+    res.clearCookie('token' , {maxAge: 0}).send({success : true})
+     })
+
+      
 
     /* read data for all services */
     app.get('/allServices', async (req, res) => {
@@ -56,6 +87,15 @@ async function run() {
 
         res.send(result);
     })
+
+
+    /* read data  for booked packages*/
+    app.get('/booked', async (req, res) => {
+        // console.log( req.cookies);
+        const result = await addBookedCollection.find().toArray()
+
+        res.send(result);
+    })
      
 
      /* get single data using id for added package */
@@ -66,7 +106,21 @@ async function run() {
             _id : new ObjectId(id)
         }
         const result = await addPackageCollection.findOne(query)
-        console.log(result);
+        // console.log(result);
+        res.send(result)
+        
+    })
+
+
+     /* get single data using id for booked packages */
+     app.get("/booked/:id", async (req, res) => {
+        const id = req.params.id
+        
+        const query = {
+            _id : new ObjectId(id)
+        }
+        const result = await addBookedCollection.findOne(query)
+        // console.log(result);
         res.send(result)
         
     })
@@ -98,7 +152,31 @@ async function run() {
             }
         }
         const result = await addPackageCollection.updateOne(filter , updatedPackage , options)
-        console.log(result);
+        // console.log(result);
+        res.send(result);
+    })
+
+
+
+
+    /* update a single data for booked packages */
+
+    app.patch('/booked/:id', async (req, res) => {
+        const id = req.params.id
+        const filter = {
+            _id: new ObjectId(id)
+        }
+        const updateBookedPackage = req.body
+        
+        console.log(updateBookedPackage);
+        const updatedPackage = {
+            $set: {
+                status: updateBookedPackage.status,
+                    
+            }
+        }
+        const result = await addBookedCollection.updateOne(filter , updatedPackage )
+        // console.log(result);
         res.send(result);
     })
 
@@ -109,7 +187,7 @@ async function run() {
         console.log(id);
         const query = { _id :new ObjectId(id)}
         const result = await addPackageCollection.deleteOne(query)
-        console.log(result);
+        // console.log(result);
         res.send(result);
     }
     )
@@ -121,7 +199,7 @@ async function run() {
         const result = await addPackageCollection.insertOne(product)
        
         res.send(result);
-        console.log(result);
+        // console.log(result);
     })
 
 
@@ -133,12 +211,12 @@ async function run() {
         const result = await addBookedCollection.insertOne(product)
        
         res.send(result);
-        console.log(result);
+        // console.log(result);
     })
 
 
 
-     /* get single data using id */
+     /* get single data using id  for addservice*/
      app.get("/allServices/:id", async (req, res) => {
         const id = req.params.id
         
@@ -146,7 +224,7 @@ async function run() {
             _id : new ObjectId(id)
         }
         const result = await serviceCollection.findOne(query)
-        console.log(result);
+        // console.log(result);
         res.send(result)
         
     })
