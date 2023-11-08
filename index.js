@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
 const cookieParser= require('cookie-parser');
 const port = process.env.PORT || 5000
 const app = express()
@@ -20,11 +21,9 @@ app.use(cors(corsConfig))
 app.use(cookieParser())
 
 
-/* user name and the password */
-// username : alviasad10
-//password : jF5pH1BpVqhMiPvK
 
-const uri = "mongodb+srv://alviasad10:jF5pH1BpVqhMiPvK@cluster0.d7bs2ds.mongodb.net/?retryWrites=true&w=majority";
+
+const uri = `mongodb+srv://${process.env.VITE_User}:${process.env.VITE_User_Password}@cluster0.d7bs2ds.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
     serverApi: {
